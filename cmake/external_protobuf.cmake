@@ -24,7 +24,19 @@ include(ExternalProject)
 # This version of PROTOBUF is required by Microsoft ONNX Runtime.
 set(NGRAPH_PROTOBUF_GIT_REPO_URL "https://github.com/protocolbuffers/protobuf")
 
-set(NGRAPH_PROTOBUF_GIT_TAG "v3.1.0")
+find_program(SYSTEM_PROTOC protoc)
+if(SYSTEM_PROTOC)
+    execute_process(COMMAND ${SYSTEM_PROTOC} --version OUTPUT_VARIABLE PROTOC_VERSION)
+    message("protoc version raw: ${PROTOC_VERSION}")
+    string(REPLACE " " ";" PROTOC_VERSION ${PROTOC_VERSION})
+    message("protoc version list: ${PROTOC_VERSION}")
+    list(GET PROTOC_VERSION -1 PROTOC_VERSION)
+    message("protoc version striped: ${PROTOC_VERSION}")
+else()
+    message(FATAL_ERROR "Nope")
+endif()
+
+set(NGRAPH_PROTOBUF_GIT_TAG "v${PROTOC_VERSION}")
 
 set(Protobuf_INSTALL_PREFIX ${EXTERNAL_PROJECTS_ROOT}/protobuf)
 set(Protobuf_PROTOC_EXECUTABLE ${Protobuf_INSTALL_PREFIX}/bin/protoc)
