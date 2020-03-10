@@ -24,7 +24,7 @@ include(ExternalProject)
 # This version of PROTOBUF is required by Microsoft ONNX Runtime.
 set(NGRAPH_PROTOBUF_GIT_REPO_URL "https://github.com/protocolbuffers/protobuf")
 
-find_program(SYSTEM_PROTOC protoc)
+find_program(SYSTEM_PROTOC protoc PATHS ENV PATH)
 if(SYSTEM_PROTOC)
     execute_process(COMMAND ${SYSTEM_PROTOC} --version OUTPUT_VARIABLE PROTOC_VERSION)
     message("protoc version raw: ${PROTOC_VERSION}")
