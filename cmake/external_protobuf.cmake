@@ -33,7 +33,7 @@ if(SYSTEM_PROTOC)
     list(GET PROTOC_VERSION -1 PROTOC_VERSION)
     message("protoc version striped: ${PROTOC_VERSION}")
 else()
-    message(FATAL_ERROR "Nope")
+    message("======================Nope======================")
 endif()
 
 set(NGRAPH_PROTOBUF_GIT_TAG "v${PROTOC_VERSION}")
