@@ -49,7 +49,5 @@ if(NOT ext_onnx_POPULATED)
     add_subdirectory(${ext_onnx_SOURCE_DIR} ${ext_onnx_BINARY_DIR})
 endif()
 
-target_compile_definitions(onnx_proto PRIVATE -DONNX_ML=ON)
-
 set(ONNX_INCLUDE_DIR ${ext_onnx_SOURCE_DIR})
 set(ONNX_PROTO_INCLUDE_DIR ${ext_onnx_BINARY_DIR})
