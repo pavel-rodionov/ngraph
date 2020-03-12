@@ -35,7 +35,9 @@ set(ONNX_GIT_BRANCH rel-${ONNX_VERSION})
 add_definitions(-DONNX_BUILD_SHARED_LIBS=ON)
 add_definitions(-DONNX_ML=ON)
 
-string(REPLACE "/W3" "/W0" CMAKE_ORIGINAL_CXX_FLAGS "${CMAKE_ORIGINAL_CXX_FLAGS}")
+if (WIN32)
+    string(REPLACE "/W3" "/W0" CMAKE_ORIGINAL_CXX_FLAGS "${CMAKE_ORIGINAL_CXX_FLAGS}")
+endif()
 
 FetchContent_Declare(
     ext_onnx
@@ -43,18 +45,14 @@ FetchContent_Declare(
     GIT_TAG ${ONNX_GIT_BRANCH}
 )
 
-include_directories("${Protobuf_INCLUDE_DIR}")
-
 FetchContent_GetProperties(ext_onnx)
 if(NOT ext_onnx_POPULATED)
     FetchContent_Populate(ext_onnx)
-    set(ONNX_BUILD_SHARED_LIBS ON)
-    set(ONNX_ML ON)
     set(ONNX_GEN_PB_TYPE_STUBS OFF)
-    list(APPEND CMAKE_PREFIX_PATH ${Protobuf_INSTALL_PREFIX})
-    #set(ONNX_CUSTOM_PROTOC_EXECUTABLE /usr/bin/protoc)
     add_subdirectory(${ext_onnx_SOURCE_DIR} ${ext_onnx_BINARY_DIR})
 endif()
+target_include_directories(onnx PRIVATE "${Protobuf_INCLUDE_DIR}")
+target_include_directories(onnx_proto PRIVATE "${Protobuf_INCLUDE_DIR}")
 
 set(ONNX_INCLUDE_DIR ${ext_onnx_SOURCE_DIR})
 set(ONNX_PROTO_INCLUDE_DIR ${ext_onnx_BINARY_DIR})
