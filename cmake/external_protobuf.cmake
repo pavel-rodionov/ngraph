@@ -24,20 +24,25 @@ include(ExternalProject)
 # This version of PROTOBUF is required by Microsoft ONNX Runtime.
 set(NGRAPH_PROTOBUF_GIT_REPO_URL "https://github.com/protocolbuffers/protobuf")
 
-find_program(SYSTEM_PROTOC protoc PATHS ENV PATH)
-if(SYSTEM_PROTOC)
-    execute_process(COMMAND ${SYSTEM_PROTOC} --version OUTPUT_VARIABLE PROTOC_VERSION)
-    message("protoc version raw: ${PROTOC_VERSION}")
-    string(REPLACE " " ";" PROTOC_VERSION ${PROTOC_VERSION})
-    message("protoc version list: ${PROTOC_VERSION}")
-    list(GET PROTOC_VERSION -1 PROTOC_VERSION)
-    message("protoc version striped: ${PROTOC_VERSION}")
-    if(${PROTOC_VERSION} VERSION_EQUAL "3.0.0")
-        message(WARNING "Protobuf 3.0.0 detected switching to 3.0.2 due to bug in gmock url")
-        set(PROTOC_VERSION "3.0.2")
+if(CMAKE_CROSSCOMPILING)
+    find_program(SYSTEM_PROTOC protoc PATHS ENV PATH)
+    if(SYSTEM_PROTOC)
+        execute_process(COMMAND ${SYSTEM_PROTOC} --version OUTPUT_VARIABLE PROTOC_VERSION)
+        message("protoc version raw: ${PROTOC_VERSION}")
+        string(REPLACE " " ";" PROTOC_VERSION ${PROTOC_VERSION})
+        message("protoc version list: ${PROTOC_VERSION}")
+        list(GET PROTOC_VERSION -1 PROTOC_VERSION)
+        message("protoc version striped: ${PROTOC_VERSION}")
+        if(${PROTOC_VERSION} VERSION_EQUAL "3.0.0")
+            message(WARNING "Protobuf 3.0.0 detected switching to 3.0.2 due to bug in gmock url")
+            set(PROTOC_VERSION "3.0.2")
+        endif()
+        set(PROTOBUF_SYSTEM_PROTOC --with-protoc=${SYSTEM_PROTOC})
+    else()
+        message("======================Nope======================")
     endif()
 else()
-    message("======================Nope======================")
+    set(PROTOC_VERSION "3.7.1")
 endif()
 
 set(NGRAPH_PROTOBUF_GIT_TAG "v${PROTOC_VERSION}")
@@ -119,7 +124,7 @@ else()
         GIT_TAG ${NGRAPH_PROTOBUF_GIT_TAG}
         UPDATE_COMMAND ""
         PATCH_COMMAND ""
-        CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure --with-protoc=/usr/bin/protoc --prefix=${EXTERNAL_PROJECTS_ROOT}/protobuf --disable-shared CXX=${CMAKE_CXX_COMPILER}
+        CONFIGURE_COMMAND ./autogen.sh COMMAND ./configure ${PROTOBUF_SYSTEM_PROTOC} --prefix=${EXTERNAL_PROJECTS_ROOT}/protobuf --disable-shared CXX=${CMAKE_CXX_COMPILER}
         BUILD_COMMAND ${MAKE_UTIL} "${BUILD_FLAGS}"
         TMP_DIR "${EXTERNAL_PROJECTS_ROOT}/protobuf/tmp"
         STAMP_DIR "${EXTERNAL_PROJECTS_ROOT}/protobuf/stamp"
