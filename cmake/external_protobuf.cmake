@@ -51,7 +51,11 @@ set(Protobuf_INSTALL_PREFIX ${EXTERNAL_PROJECTS_ROOT}/protobuf)
 set(Protobuf_PROTOC_EXECUTABLE ${Protobuf_INSTALL_PREFIX}/bin/protoc)
 set(Protobuf_INCLUDE_DIR ${Protobuf_INSTALL_PREFIX}/include)
 if (WIN32)
-    set(Protobuf_LIBRARY ${Protobuf_INSTALL_PREFIX}/lib/libprotobuf.lib)
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(Protobuf_LIBRARY ${Protobuf_INSTALL_PREFIX}/lib/libprotobufd.lib)
+    else()
+        set(Protobuf_LIBRARY ${Protobuf_INSTALL_PREFIX}/lib/libprotobuf.lib)
+    endif()
 else()
     set(Protobuf_LIBRARY ${Protobuf_INSTALL_PREFIX}/lib/libprotobuf.a)
 endif()
@@ -67,6 +71,7 @@ if (WIN32)
         ext_protobuf
         PREFIX protobuf
         GIT_REPOSITORY ${NGRAPH_PROTOBUF_GIT_REPO_URL}
+        GIT_SHALLOW TRUE
         GIT_TAG ${NGRAPH_PROTOBUF_GIT_TAG}
         UPDATE_COMMAND ""
         PATCH_COMMAND ""
@@ -75,6 +80,7 @@ if (WIN32)
         CMAKE_GENERATOR_TOOLSET ${CMAKE_GENERATOR_TOOLSET}
         CMAKE_ARGS
             ${NGRAPH_FORWARD_CMAKE_ARGS}
+            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
             -DCMAKE_CXX_FLAGS=${CMAKE_ORIGINAL_CXX_FLAGS}
             -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
             -Dprotobuf_WITH_ZLIB=OFF
