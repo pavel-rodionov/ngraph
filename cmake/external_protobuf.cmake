@@ -71,7 +71,6 @@ if (WIN32)
         ext_protobuf
         PREFIX protobuf
         GIT_REPOSITORY ${NGRAPH_PROTOBUF_GIT_REPO_URL}
-        GIT_SHALLOW TRUE
         GIT_TAG ${NGRAPH_PROTOBUF_GIT_TAG}
         UPDATE_COMMAND ""
         PATCH_COMMAND ""
